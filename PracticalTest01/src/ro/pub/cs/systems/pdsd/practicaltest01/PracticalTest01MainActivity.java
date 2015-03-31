@@ -1,6 +1,7 @@
 package ro.pub.cs.systems.pdsd.practicaltest01;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 
 public class PracticalTest01MainActivity extends Activity {
@@ -28,17 +30,29 @@ public class PracticalTest01MainActivity extends Activity {
         Button buttonEmail= (Button) findViewById(R.id.button_email);
         Button buttonPhone= (Button) findViewById(R.id.button_phone);
         
+        Button buttonIntent = (Button) findViewById(R.id.button_intent);
+        
+        buttonIntent.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Intent intent = new Intent(PracticalTest01MainActivity.this, PracticalTest01SecondaryActivity.class);
+				intent.putExtra("name", name);
+				intent.putExtra("email", email);
+				intent.putExtra("phone", phone);
+				startActivityForResult(intent, 2015);
+			}
+		});
+        
         final EditText editText = (EditText) findViewById(R.id.edit_text);
         
         buttonName.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				press=1;
-				if(name=="") {
-					editText.setHint("Name");
-				} else {
-					editText.setText(name);
-				}
+				editText.setHint("Name");
+				editText.setText(name);
 			}
 		});
         
@@ -47,11 +61,8 @@ public class PracticalTest01MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				press=2;
-				if(email=="") {
-					editText.setHint("Email");
-				} else {
-					editText.setText(email);
-				}
+				editText.setHint("Email");
+				editText.setText(email);
 			}
 		});
         
@@ -60,11 +71,8 @@ public class PracticalTest01MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				press=3;
-				if(phone=="") {
-					editText.setHint("Phone");
-				} else {
-					editText.setText(phone);
-				}
+				editText.setHint("Phone");
+				editText.setText(phone);
 			}
 		});
         
@@ -73,11 +81,11 @@ public class PracticalTest01MainActivity extends Activity {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				if(press==1) {
-					name=editText.getText().toString();
+					name=s.toString();
 				} else if(press==2) {
-					email=editText.getText().toString();
+					email=s.toString();
 				} else if(press==3) {
-					phone=editText.getText().toString();
+					phone=s.toString();
 				}
 			}
 			
@@ -93,10 +101,54 @@ public class PracticalTest01MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				
 			}
-		})
+		});
         
     }
+    
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    	  switch(requestCode) {
+    	    case 2015:
+    	      if (resultCode == Activity.RESULT_OK) {
+    	        String data = intent.getStringExtra("ro.pub.cs.systems.pdsd.practicaltest01.res1");
+    	        Toast.makeText(getApplicationContext(), data, Toast.LENGTH_LONG).show();
+    	      } else {
+    	    	String data = intent.getStringExtra("ro.pub.cs.systems.pdsd.practicaltest01.res2");
+    	    	Toast.makeText(getApplicationContext(), data, Toast.LENGTH_LONG).show();
+    	      }
+    	      break;
+    	 
+    	  }
+    	}
+    
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+      super.onSaveInstanceState(savedInstanceState);
+      
+      EditText edit1 = (EditText)findViewById(R.id.edit_text);
+      savedInstanceState.putString("EditText", edit1.getText().toString());
+      
+      
+      savedInstanceState.putString("name", name);
+      savedInstanceState.putString("email", email);
+      savedInstanceState.putString("phone", phone);
+      savedInstanceState.putString("press", press+"");
+    }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+      super.onRestoreInstanceState(savedInstanceState);
+      
+      EditText edit1= (EditText)findViewById(R.id.edit_text);
+      if (savedInstanceState.getString("EditText") != null) {
+          edit1.setText(savedInstanceState.getString("EditText"));
+      }
+      
+      name = savedInstanceState.getString("name");
+      email = savedInstanceState.getString("email");
+      phone = savedInstanceState.getString("phone");
+      press = Integer.parseInt(savedInstanceState.getString("press"));
+    
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
